@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bohol Tourist Route Finder</title>
+    <link rel="stylesheet" href="assets/css/styles.css?v=3" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#home" aria-label="Bohol Route Finder home">
+        <span class="brand-mark" aria-hidden="true">B</span>
+        <span class="brand-name">Bohol <span>Route Finder</span></span>
+      </a>
+      <nav class="top-nav" aria-label="Main navigation">
+        <a href="#route">Route planner</a>
+        <a href="#text-tools">Text tools</a>
+        <a href="#analysis">Analysis</a>
+      </nav>
+      <button id="authButton" class="topbar-button auth-button" type="button">Log in</button>
+    </header>
+
+    <main id="home" class="container">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Discover the island, one route at a time</p>
+          <h1>Plan a smarter trip<br />around <span>Bohol.</span></h1>
+          <p class="hero-description">
+            Explore popular destinations and calculate the shortest route with Dijkstra's algorithm.
+            Search and analyze text with the project's algorithm toolkit.
+          </p>
+          <a class="hero-link" href="#route">Plan your route <span aria-hidden="true">↓</span></a>
+        </div>
+        <div class="hero-stats" aria-label="Project overview">
+          <div class="stat-card"><strong>10</strong><span>Destinations</span></div>
+          <div class="stat-card"><strong>11</strong><span>Connections</span></div>
+          <div class="stat-card"><strong>O(V²)</strong><span>Route algorithm</span></div>
+        </div>
+      </section>
+
+      <section class="card map-card">
+        <div class="section-header">
+          <div>
+            <p class="section-kicker">Explore</p>
+            <h2>Bohol tourist map</h2>
+            <p class="card-description">
+              Google Maps with an OpenStreetMap fallback. Blue and green lines show project graph connections, not roads.
+              Select a marker for the exact place name or use the directory below.
+            </p>
+          </div>
+          <span class="live-badge"><span></span> Live map</span>
+        </div>
+
+        <div class="map-wrapper">
+          <button id="fullScreenBtn" class="topbar-button map-fullscreen-button" type="button">⛶ <span>Full screen map</span></button>
+          <div id="map" class="map" aria-label="Interactive Bohol tourist map"></div>
+        </div>
+
+        <div class="legend">
+          <div class="legend-item"><span class="legend-dot red"></span> Tourist Spot</div>
+          <div class="legend-item"><span class="legend-dot green"></span> Selected graph path</div>
+          <div class="legend-item"><span class="legend-dot blue"></span> Start</div>
+          <div class="legend-item"><span class="legend-dot purple"></span> Destination</div>
+        </div>
+        <p class="map-attribution">Google Maps is used when configured; otherwise the map falls back to OpenStreetMap.</p>
+
+        <div class="spot-directory" aria-label="Tourist spot names">
+          <button class="spot-chip" type="button" onclick="selectStart('A')"><span>A</span>Chocolate Hills</button>
+          <button class="spot-chip" type="button" onclick="selectStart('B')"><span>B</span>Danao Adventure Park</button>
+          <button class="spot-chip" type="button" onclick="selectStart('C')"><span>C</span>Philippine Tarsier Sanctuary</button>
+          <button class="spot-chip" type="button" onclick="selectStart('D')"><span>D</span>Loboc River</button>
+          <button class="spot-chip" type="button" onclick="selectStart('E')"><span>E</span>Bilar Man-Made Forest</button>
+          <button class="spot-chip" type="button" onclick="selectStart('F')"><span>F</span>Baclayon Church</button>
+          <button class="spot-chip" type="button" onclick="selectStart('G')"><span>G</span>Blood Compact Shrine</button>
+          <button class="spot-chip" type="button" onclick="selectStart('H')"><span>H</span>Hinagdanan Cave</button>
+          <button class="spot-chip" type="button" onclick="selectStart('I')"><span>I</span>Alona Beach</button>
+          <button class="spot-chip" type="button" onclick="selectStart('J')"><span>J</span>Pahangog Falls</button>
+        </div>
+      </section>
+
+      <section id="route" class="card route-card">
+        <p class="section-kicker">Route planner</p>
+        <h2>Find your shortest route</h2>
+        <p class="card-description">
+          Select a starting tourist attraction and a destination. The system will use Dijkstra's Algorithm to determine
+          the shortest path.
+        </p>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="start">Starting Tourist Spot</label>
+            <select id="start"></select>
+          </div>
+
+          <div class="form-group">
+            <label for="destination">Destination Tourist Spot</label>
+            <select id="destination"></select>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button class="primary-btn" type="button" onclick="findShortestRoute()">Find shortest route <span aria-hidden="true">→</span></button>
+          <button class="secondary-btn" type="button" onclick="resetRoute()">Reset</button>
+        </div>
+
+        <div id="routeResult" class="result" aria-live="polite"></div>
+        <section class="saved-trips" aria-labelledby="savedTripsHeading">
+          <div class="saved-trips-header">
+            <div>
+              <p class="section-kicker">Your itinerary</p>
+              <h3 id="savedTripsHeading">Saved routes</h3>
+            </div>
+            <button id="clearSavedTripsBtn" class="text-button" type="button" hidden>Clear all</button>
+          </div>
+          <p id="savedTripsEmpty" class="saved-trips-empty">Save a route to keep it handy on this browser.</p>
+          <ul id="savedTripsList" class="saved-trips-list" aria-live="polite"></ul>
+        </section>
+      </section>
+
+      <section id="text-tools" class="card feature-card">
+        <p class="section-kicker">Project toolkit</p>
+        <h2>Text search, compression & optimization</h2>
+        <p class="card-description">
+          Use one shared text dataset for search, compression, randomized sampling, and dictionary optimization.
+          Search is case-sensitive; match positions use zero-based UTF-16 character offsets.
+        </p>
+
+        <div class="feature-grid">
+          <div class="feature-panel dataset-panel full-span">
+            <span class="feature-number">01</span>
+            <h3>Shared text dataset</h3>
+            <label for="textInput">Type or paste text</label>
+            <textarea id="textInput" rows="7">Bohol is a beautiful island province in the Philippines. Visitors explore the Chocolate Hills in Carmen, the Philippine Tarsier Sanctuary in Corella, and the Loboc River. The Bilar Man-Made Forest offers a cool stop along the route to Chocolate Hills. Travelers also visit Baclayon Church, the Blood Compact Shrine, Hinagdanan Cave, Alona Beach, Danao Adventure Park, and Pahangog Falls. Bohol's beaches, rivers, caves, forests, and heritage sites make every visit memorable.</textarea>
+            <div class="button-row">
+              <button id="loadSampleBtn" class="primary-btn" type="button">Load Sample Dataset</button>
+              <button id="clearDatasetBtn" class="secondary-btn" type="button">Clear Text</button>
+              <label class="file-upload-label" for="datasetFile">Upload .txt file</label>
+              <input id="datasetFile" class="file-upload-input" type="file" accept=".txt,text/plain" />
+            </div>
+            <div id="datasetStats" class="dataset-stats" aria-live="polite"></div>
+            <div id="datasetMessage" class="feature-output" aria-live="polite">Ready. Search and compression use this dataset.</div>
+          </div>
+
+          <div class="feature-panel full-span">
+            <span class="feature-number">02</span>
+            <h3>Pattern matching</h3>
+            <label for="patternInput">Search Pattern</label>
+            <input id="patternInput" type="text" value="Chocolate Hills" />
+            <div class="button-row">
+              <button id="searchPatternBtn" class="primary-btn" type="button">Run all four searches</button>
+            </div>
+            <div id="patternResult" class="feature-output" aria-live="polite">Enter a pattern to compare all four algorithms.</div>
+          </div>
+
+          <div class="feature-panel full-span">
+            <span class="feature-number">03</span>
+            <h3>Text compression</h3>
+            <label for="compressionAlgorithm">Compression Method</label>
+            <select id="compressionAlgorithm">
+              <option value="rle">Run-Length Encoding (RLE)</option>
+              <option value="dictionary">Dictionary-Based Compression (knapsack-selected words)</option>
+            </select>
+            <div class="button-row">
+              <button id="compressDatasetBtn" class="primary-btn" type="button">Compress Dataset</button>
+            </div>
+            <div id="compressionResult" class="feature-output" aria-live="polite">Select a method and compress the shared dataset.</div>
+            <label for="originalTextOutput">Original dataset</label>
+            <textarea id="originalTextOutput" rows="4" readonly></textarea>
+            <label for="compressedTextOutput">Compressed representation</label>
+            <textarea id="compressedTextOutput" rows="5" readonly></textarea>
+            <p class="help-text">Ratio = compressed representation UTF-8 bytes ÷ original UTF-8 bytes. A ratio below 1 means smaller; above 1 means the encoded representation is larger. Dictionary output includes its dictionary header.</p>
+          </div>
+
+          <div class="feature-panel">
+            <span class="feature-number">04</span>
+            <h3>Dictionary optimization (0/1 knapsack)</h3>
+            <p class="help-text">Selects repeated words that maximize encoded-text savings within the dictionary-storage budget. Uses the current shared dataset.</p>
+            <label for="dictionaryBudget">Dictionary budget (UTF-8 bytes)</label>
+            <input id="dictionaryBudget" type="number" min="2" max="5000" step="1" value="120" />
+            <div class="button-row">
+              <button id="optimizeDatasetBtn" class="success-btn" type="button">Optimize Dictionary</button>
+            </div>
+            <div id="optimizationResult" class="feature-output" aria-live="polite">Run the knapsack optimizer on the shared dataset.</div>
+          </div>
+
+          <div class="feature-panel full-span">
+            <span class="feature-number">05</span>
+            <h3>Randomized word sampling</h3>
+            <p class="help-text">Reservoir sampling chooses a random sample of words from the current dataset; it does not claim to run parallel workers.</p>
+            <div class="button-row">
+              <label for="sampleSize">Sample size</label>
+              <input id="sampleSize" type="number" min="1" max="1000" step="1" value="20" />
+              <button id="randomSampleBtn" class="secondary-btn" type="button">Run Randomized Sampling</button>
+            </div>
+            <div id="randomSampleResult" class="feature-output" aria-live="polite">No randomized sample run yet.</div>
+          </div>
+
+          <div class="feature-panel full-span">
+            <span class="feature-number">06</span>
+            <h3>Caesar Cipher</h3>
+            <label for="caesarInput">Message</label>
+            <textarea id="caesarInput" rows="3" placeholder="Enter a message to encrypt or decrypt"></textarea>
+            <label for="caesarShift">Shift (0–25)</label>
+            <input id="caesarShift" type="number" min="0" max="25" step="1" value="3" />
+            <div class="button-row">
+              <button id="caesarEncryptBtn" class="primary-btn" type="button">Encrypt</button>
+              <button id="caesarDecryptBtn" class="secondary-btn" type="button">Decrypt</button>
+            </div>
+            <label for="caesarOutput">Result</label>
+            <textarea id="caesarOutput" rows="3" readonly aria-live="polite"></textarea>
+            <div id="caesarStatus" class="feature-output">Educational cipher only; not secure for sensitive messages.</div>
+          </div>
+
+          <div class="feature-panel full-span">
+            <h3>Execution time and complexity</h3>
+            <div id="analysisResult" class="feature-output">
+              Search time / auxiliary space: Brute Force O(nm) worst / O(1); KMP O(n + m) / O(m); Rabin-Karp O(n + m) average, O(nm) worst / O(1); Boyer-Moore bad-character variant O(nm) worst / O(min(m, alphabet size)). Match positions require O(z) output space. RLE is O(n) time and O(n) output space. Dictionary processing is O(n + d log d + dB) time and O(dB) worst-case state space for the 0/1 knapsack, where d is repeated-word candidates and B is dictionary-storage budget. Reservoir sampling is O(n) time and O(k) space. Search, compression, optimization, and sampling show measured browser execution times; results vary by device and input size. Compression size uses UTF-8 bytes and includes the emitted dictionary header.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="analysis" class="card algorithm-card">
+        <p class="section-kicker">Under the hood</p>
+        <h2>Algorithm and complexity</h2>
+
+        <div class="algorithm-box">
+          <h3>1. Graph Representation</h3>
+          <p>
+            The system represents selected Bohol tourist attractions as vertices of a weighted graph. Connections between
+            attractions are represented as edges. The edge weight represents the distance between two tourist attractions.
+          </p>
+        </div>
+
+        <div class="algorithm-box">
+          <h3>2. Dijkstra's Shortest Path Algorithm</h3>
+          <p>
+            Dijkstra's Algorithm is used to find the shortest route between the selected starting point and destination.
+            The algorithm repeatedly selects the unvisited vertex with the smallest known distance and updates the distances
+            of its neighboring vertices.
+          </p>
+        </div>
+
+        <div class="algorithm-box">
+          <h3>3. Algorithm Design Technique</h3>
+          <p>
+            The system uses the <strong>Greedy Method</strong>. Dijkstra's Algorithm follows a greedy strategy by selecting the
+            currently closest unvisited vertex at every step.
+          </p>
+        </div>
+
+        <div class="algorithm-box">
+          <h3>4. Time Complexity</h3>
+          <p>
+            The simple implementation used in this project has a time complexity of <strong>O(V²)</strong>, where V represents
+            the number of vertices or tourist spots.
+          </p>
+        </div>
+
+        <div class="algorithm-box">
+          <h3>5. Space Complexity</h3>
+          <p>
+            The graph and supporting arrays require <strong>O(V + E)</strong>, where V is the number of tourist spots and E is
+            the number of connections between them.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <a class="footer-brand" href="#home">Bohol Route Finder</a>
+      <p>Graph algorithms · Pattern matching · Text compression</p>
+      <p class="footer-note">BSCS project · Built for exploring Bohol</p>
+    </footer>
+
+    <dialog id="authDialog" class="auth-dialog" aria-labelledby="authTitle">
+      <div class="auth-dialog-content">
+        <button id="closeAuthDialog" class="dialog-close" type="button" aria-label="Close login dialog">×</button>
+        <p class="section-kicker">Traveler profile</p>
+        <h2 id="authTitle">Welcome back</h2>
+        <p id="authDescription" class="auth-description">Log in to preview a personalized traveler profile.</p>
+        <div class="auth-tabs" role="tablist" aria-label="Choose login or sign up">
+          <button id="loginTab" class="auth-tab active" type="button" role="tab" aria-selected="true">Log in</button>
+          <button id="signupTab" class="auth-tab" type="button" role="tab" aria-selected="false">Sign up</button>
+        </div>
+        <p class="auth-demo-note">Demo only: accounts are not verified and no password is sent or saved. Do not enter a real password.</p>
+        <form id="authForm">
+          <div id="authNameGroup" class="form-group" hidden>
+            <label for="authName">Your name</label>
+            <input id="authName" name="name" type="text" autocomplete="name" maxlength="60" />
+          </div>
+          <div class="form-group">
+            <label for="authEmail">Email address</label>
+            <input id="authEmail" name="email" type="email" autocomplete="email" required />
+          </div>
+          <div class="form-group">
+            <label for="authPassword">Password</label>
+            <div class="password-field">
+              <input id="authPassword" name="password" type="password" autocomplete="current-password" required />
+              <button id="togglePasswordBtn" class="password-toggle" type="button" aria-pressed="false">Show</button>
+            </div>
+          </div>
+          <p id="authFeedback" class="auth-feedback" aria-live="polite"></p>
+          <button id="authSubmitBtn" class="primary-btn auth-submit" type="submit">Log in</button>
+        </form>
+      </div>
+    </dialog>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/app.js?v=5"></script>
+  </body>
+</html>

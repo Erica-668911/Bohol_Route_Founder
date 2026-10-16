@@ -1,0 +1,35 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run Bohol Route Finder Web Server (8003)",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "-m",
+        "http.server",
+        "8003",
+        "--bind",
+        "0.0.0.0"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "runOptions": {
+        "instanceLimit": 1
+      },
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^(.*)$",
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Serving HTTP on",
+          "endsPattern": "Serving HTTP on .* port 8003"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Bohol Route Finder in Chrome",
+      "type": "pwa-chrome",
+      "request": "launch",
+      "url": "http://127.0.0.1:8003/",
+      "webRoot": "${workspaceFolder}",
+      "preLaunchTask": "Run Bohol Route Finder Web Server (8003)"
+    }
+  ]
+}
